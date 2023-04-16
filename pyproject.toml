@@ -1,0 +1,111 @@
+[project]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Utilities",
+    "License :: OSI Approved :: MIT License",
+]
+name = "organize-photos"
+version = "0.1.0"
+description = "Python CLI program that allows you to organize your photos into subfolders based on their EXIF metadata."
+authors = [{ name = "ohmycoffe", email = "ohmycoffe1@gmail.com" }]
+dependencies = ["Pillow>=10.0.1", "click>=8.1.7"]
+requires-python = ">=3.8"
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = ["photos", "images", "multimedia", "organize", "exif"]
+
+[project.scripts]
+organize-photos = "organize_photos.__main__:main"
+
+[project.urls]
+repository = "https://github.com/ohmycoffe/organize-photos"
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+[[tool.pdm.source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[tool.pdm.dev-dependencies]
+dev = ["tox>=4.11.3", "pre-commit>=3.4.0"]
+test = [
+    "pytest",
+    "numpy>=1.24.4",
+    "piexif>=1.1.3",
+    "pytest-cov>=4.1.0",
+    "pytest-xdist>=3.3.1",
+    "pytest-mock>=3.11.1",
+]
+lint = ["mypy", "flake8-pyproject", "types-Pillow", "ruff"]
+format = ["black"]
+
+
+[tool.coverage.run]
+omit = ["**/template_backport.py", "**/organize_photos/__main__.py"]
+
+[tool.mypy]
+# https://careers.wolt.com/en/blog/tech/professional-grade-mypy-configuration
+# disallow_untyped_defs = true
+# ignore_missing_imports = true
+# disallow_any_unimported = true
+# no_implicit_optional = true
+# check_untyped_defs = true
+# warn_return_any = true
+# show_error_codes = true
+# warn_unused_ignores = true
+strict = true
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src/typings"
+
+# [[tool.mypy.overrides]]
+# module = ["piexif"]
+
+
+[tool.bandit.assert_used]
+skips = ['tests/**/*.py', 'tests/*.py']
+
+[tool.codespell]
+skip = 'htmlcov,tests/resources/valid_dirtree_recipe.json'
+
+[tool.ruff]
+src = ["src"]
+line-length = 88 # Same as Black.
+
+select = ["ALL"]
+ignore = [
+    "D",
+    "ANN",
+    "PTH123",
+    "TRY003",
+    "EM102",
+    "EM101",
+    "PT001",
+    "DTZ001",
+    "RET504",
+    "PGH003",
+    "SIM105",
+]
+
+[tool.ruff.per-file-ignores]
+"tests/**/*.py" = ["S101"]
+
+[tool.pyright] # this setting is utilized in case of using vscode (IDE) AND pylance (python-bundled-extension)
+include = ["src", "tests"]
+pythonVersion = "3.8"
+pythonPlatform = "All"
+reportMissingTypeStubs = true
+stubPath = "./src/typings"

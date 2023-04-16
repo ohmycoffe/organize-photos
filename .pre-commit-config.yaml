@@ -1,0 +1,29 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+      - id: check-added-large-files # Prevent giant files from being committed.
+      - id: end-of-file-fixer # Makes sure files end in a newline and only a newline.
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.10.1
+    hooks:
+      - id: pyupgrade
+        args: ["--keep-percent-format", "--py38-plus"]
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 23.9.0
+    hooks:
+      - id: black
+  - repo: https://github.com/PyCQA/bandit
+    rev: "1.7.5"
+    hooks:
+      - id: bandit
+        args: ["-c", "pyproject.toml"]
+        additional_dependencies: ["bandit[toml]"]
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.16.1
+    hooks:
+      - id: gitleaks
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.0.291
+    hooks:
+      - id: ruff
