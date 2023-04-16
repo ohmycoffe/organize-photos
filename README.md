@@ -1,2 +1,2 @@
 # organize-photos
-The simple Python CLI tool enables users to efficiently organize and group their photos within a specified folder by renaming them according to metadata.
+The Python CLI tool utilizes metadata to efficiently organize and group photos within a specified folder by renaming them based on their metadata attributes
