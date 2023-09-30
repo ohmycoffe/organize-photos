@@ -4,9 +4,8 @@ import datetime
 import logging
 import shutil
 from collections import Counter
-from pathlib import Path
 from string import Template
-from typing import Any, Iterable
+from typing import TYPE_CHECKING, Any, Iterable
 
 from PIL import ExifTags
 
@@ -18,6 +17,9 @@ from organize_photos.constants import (
 )
 from organize_photos.loader import read_image
 from organize_photos.template_backport import get_identifiers, is_valid
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +43,7 @@ class _Parts:
     def __call__(self, path: Path) -> Any:
         self._reset()
         img = read_image(path)
-        exif_dict: dict[int, Any] = img._getexif()  # type: ignore
+        exif_dict: dict[int, Any] = img._getexif()  # type: ignore[attr-defined] # noqa: SLF001 E501
         if VALID_PLACEHOLDERS.OLDNAME in self._expected_parts:
             self._parts[VALID_PLACEHOLDERS.OLDNAME] = path.stem
 
@@ -54,8 +56,8 @@ class _Parts:
             VALID_PLACEHOLDERS.SECOND,
         } & self._expected_parts:
             try:
-                self._add_datetime(exif_dict=exif_dict, path=path)
-            except Exception as e:
+                self._add_datetime(exif_dict=exif_dict)
+            except Exception as e:  # noqa: BLE001
                 logger.warning(
                     r"Processing 'DateTimeOriginal' field failed {path: '%s': error:"
                     r" '%s'}",
@@ -64,10 +66,11 @@ class _Parts:
                 )
         return self._parts
 
-    def _add_datetime(self, exif_dict: dict, path: Path):
+    def _add_datetime(self, exif_dict: dict):
         date_time_original_str = exif_dict[ExifTags.Base.DateTimeOriginal.value]
-        date_time_original_obj = datetime.datetime.strptime(
-            date_time_original_str, EXIF_DATETIME_FORMAT
+        date_time_original_obj = datetime.datetime.strptime(  # noqa: DTZ007
+            date_time_original_str,
+            EXIF_DATETIME_FORMAT,
         )
         self._parts.update(
             {
@@ -77,7 +80,7 @@ class _Parts:
                 "hour": f"{date_time_original_obj.hour:02d}",
                 "minute": f"{date_time_original_obj.minute:02d}",
                 "second": f"{date_time_original_obj.second:02d}",
-            }
+            },
         )
 
 
@@ -95,8 +98,7 @@ class FilepathCreator:
             name = f"default/{path.stem}"
             logger.warning("For '%s' a default path will be created '%s'", path, name)
 
-        new_path = self._outdir / f"{name}{path.suffix}"
-        return new_path
+        return self._outdir / f"{name}{path.suffix}"
 
 
 def check_template(template: Template):
@@ -106,7 +108,7 @@ def check_template(template: Template):
     if unknown_placeholders:
         raise RuntimeError(
             f"Unknown placeholders given {unknown_placeholders} in"
-            f" '{template.template}'."
+            f" '{template.template}'.",
         )
 
 
@@ -115,7 +117,7 @@ def process(
     dst_dir: Path,
     template: str,
     file_pattern: str = "**/*",
-    is_dry_run: bool = False,
+    is_dry_run: bool = False,  # noqa: FBT002 FBT001
 ) -> None:
     """
     Copy files from source_directory to destination_directory based on a path template.
@@ -145,7 +147,7 @@ def process(
 def process_files(
     src_filepaths: Iterable[Path],
     filepath_creator: FilepathCreator,
-    is_dry_run: bool = False,
+    is_dry_run: bool = False,  # noqa: FBT001 FBT002
 ) -> None:
     stats = Counter(**{_PROCESSED_FILES: 0, _SUCCEEDED: 0, _FAILED: 0})
     for it, oldfilepath in enumerate(src_filepaths):
@@ -158,17 +160,17 @@ def process_files(
             suffix = oldfilepath.suffix
             stats[suffix] += 1
             if suffix not in SUPPORTED_IMAGE_SUFFIXES:
-                raise RuntimeError(f"Suffix '{suffix}' is not supportrd")
+                raise RuntimeError(  # noqa: TRY301
+                    f"Suffix '{suffix}' is not supportrd",
+                )
             newfilepath = filepath_creator(path=oldfilepath)
             if not is_dry_run:
                 newfilepath.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(src=str(oldfilepath), dst=str(newfilepath))
             logger.info("Copy file from '%s' to '%s'.", oldfilepath, newfilepath)
             stats[_SUCCEEDED] += 1
-        except Exception as e:
-            logger.exception(
-                "Failed to process %s: %s. Will be skipped.", oldfilepath, e
-            )
+        except Exception:
+            logger.exception("Failed to process %s. Will be skipped.", oldfilepath)
             stats[_FAILED] += 1
 
     logger.info(

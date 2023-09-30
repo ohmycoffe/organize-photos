@@ -28,6 +28,7 @@ lint: .pdm # Lint python source files
 	pdm run isort $(sources) --check --diff
 	pdm run flake8 $(sources)
 	pdm run mypy $(sources)
+	pdm run ruff $(sources)
 
 .PHONY: pre-commit
 pre_commit: .pdm # Run pre-commit for all files

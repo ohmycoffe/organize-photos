@@ -1,15 +1,19 @@
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from click.testing import CliRunner
 
 from organize_photos.cli import cli
 from tests.utils import ImageRecipe, create_dirtree
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
 
 def test_integration_happy_case(
-    tmp_path: Path, valid_dirtree_recipe: list[ImageRecipe]
+    tmp_path: Path,
+    valid_dirtree_recipe: list[ImageRecipe],
 ):
     src = tmp_path / "src"
     create_dirtree(recipe=valid_dirtree_recipe, outdir=src)

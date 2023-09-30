@@ -21,7 +21,10 @@ verify_ssl = true
 name = "pypi"
 
 [tool.pdm.dev-dependencies]
-dev = ["tox>=4.11.3", "pre-commit>=3.4.0"]
+dev = [
+    "tox>=4.11.3",
+    "pre-commit>=3.4.0",
+]
 test = [
     "pytest",
     "numpy>=1.24.4",
@@ -30,7 +33,13 @@ test = [
     "pytest-xdist>=3.3.1",
     "pytest-mock>=3.11.1",
 ]
-lint = ["flake8", "mypy", "flake8-pyproject>=1.2.3", "types-Pillow>=10.0.0.3"]
+lint = [
+    "flake8",
+    "mypy",
+    "flake8-pyproject",
+    "types-Pillow",
+    "ruff",
+]
 format = ["black", "isort"]
 
 
@@ -54,3 +63,25 @@ skips = ['tests/**/*.py', 'tests/*.py']
 
 [tool.codespell]
 skip = 'htmlcov,tests/resources/valid_dirtree_recipe.json'
+
+[tool.ruff]
+src = ["src"]
+line-length = 88 # Same as Black.
+
+select = [
+    "ALL"
+]
+ignore = [
+    "D", 
+    "ANN", 
+    "PTH123",
+    "TRY003",
+    "EM102",
+    "EM101",
+    "PT001",
+    "DTZ001",
+    "RET504"
+]
+
+[tool.ruff.per-file-ignores]
+"tests/**/*.py" = ["S101"]

@@ -46,15 +46,14 @@ class RandomValuesGenerator:
             3,
         )
         array = self.rng.integers(low=0, high=256, size=size, dtype=np.uint8)
-        img = Image.fromarray(array)
-        return img
+        return Image.fromarray(array)
 
     def get_string(self, min_length: int, max_length: int) -> str:
         return "".join(
             self.rng.choice(
                 a=_ALPHABET,
                 size=self.rng.integers(min_length, max_length, endpoint=True),
-            )
+            ),
         )
 
     def get_dirpath(
@@ -67,7 +66,7 @@ class RandomValuesGenerator:
             *[
                 self.get_string(min_length, max_length)
                 for _ in range(self.rng.integers(max_depth, endpoint=True))
-            ]
+            ],
         )
         return p
 
@@ -88,7 +87,7 @@ def _create_jpeg_exif(artist: str, datetime_original: str) -> bytes:
         # piexif.ImageIFD.DateTime: "2001:01:01 00:00:00",
     }
     exif_ifd = {
-        piexif.ExifIFD.DateTimeOriginal: datetime_original
+        piexif.ExifIFD.DateTimeOriginal: datetime_original,
         # piexif.ExifIFD.DateTimeDigitized: "2003:09:29 10:10:11",
     }
 
@@ -125,16 +124,16 @@ def create_random_recipe(
         artist = rng.rng.choice(a=["PersonA", "PersonB", "PersonC"])
         dirpath = rng.rng.choice(dirs)
         filename = rng.get_filename(
-            min_length=3, max_length=7, suffixes=SUPPORTED_IMAGE_SUFFIXES
+            min_length=3,
+            max_length=7,
+            suffixes=SUPPORTED_IMAGE_SUFFIXES,
         )
         res.append(
             ImageRecipe(
-                **{
-                    "path": str(Path(dirpath, filename)),
-                    "artist": artist,
-                    "timestamp": timestamp.strftime(EXIF_DATETIME_FORMAT),
-                }
-            )
+                path=str(Path(dirpath, filename)),
+                artist=artist,
+                timestamp=timestamp.strftime(EXIF_DATETIME_FORMAT),
+            ),
         )
     return res
 

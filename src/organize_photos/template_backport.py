@@ -1,7 +1,10 @@
 """Backported `Template` Class utilities for Python < 3.11."""
 from __future__ import annotations
 
-from string import Template
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from string import Template
 
 
 def is_valid(template: Template) -> bool:
@@ -27,7 +30,7 @@ def is_valid(template: Template) -> bool:
         ):
             # If all the groups are None, there must be
             # another group we're not expecting
-            raise ValueError("Unrecognized named group in pattern", template.pattern)
+            raise ValueError(f"Unrecognized named group in pattern: {template.pattern}")
     return True
 
 
