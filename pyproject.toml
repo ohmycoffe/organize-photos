@@ -34,13 +34,14 @@ test = [
     "pytest-mock>=3.11.1",
 ]
 lint = [
-    "flake8",
     "mypy",
     "flake8-pyproject",
     "types-Pillow",
     "ruff",
 ]
-format = ["black", "isort"]
+format = [
+    "black",
+]
 
 
 [tool.coverage.run]
@@ -50,13 +51,6 @@ omit = ["**/template_backport.py", "**/organize_photos/__main__.py"]
 [[tool.mypy.overrides]]
 module = ["piexif"]
 ignore_missing_imports = true
-
-[tool.isort]
-profile = "black"
-
-[tool.flake8]
-max-line-length = 88
-extend-ignore = "E203"
 
 [tool.bandit.assert_used]
 skips = ['tests/**/*.py', 'tests/*.py']

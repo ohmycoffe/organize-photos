@@ -20,13 +20,11 @@ sources = src tests
 .PHONY: format
 format: .pdm # Auto-format Python source files
 	pdm run black $(sources)
-	pdm run isort $(sources)
+	pdm run ruff --select I001 --fix --show-fixes $(sources)
 
 .PHONY: lint
-lint: .pdm # Lint python source files
+lint: .pdm .pre_commit # Lint python source files
 	pdm run black $(sources) --check --diff
-	pdm run isort $(sources) --check --diff
-	pdm run flake8 $(sources)
 	pdm run mypy $(sources)
 	pdm run ruff $(sources)
 
