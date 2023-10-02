@@ -1,5 +1,3 @@
-# pyright: reportUnknownMemberType=false
-
 from __future__ import annotations
 
 import datetime
@@ -22,12 +20,12 @@ class RandomValuesGenerator:
         self.rng = np.random.default_rng(seed)
 
     def get_datetime(self, min_year: int, max_year: int) -> datetime.datetime:
-        year: bool = self.rng.integers(low=min_year, high=max_year, endpoint=True)
-        month: bool = self.rng.integers(low=1, high=12, endpoint=True)
-        day: bool = self.rng.integers(low=1, high=28, endpoint=True)
-        hour = self.rng.integers(low=0, high=24)
-        minute = self.rng.integers(low=0, high=60)
-        second = self.rng.integers(low=0, high=60)
+        year: int = self.rng.integers(low=min_year, high=max_year, endpoint=True)
+        month: int = self.rng.integers(low=1, high=12, endpoint=True)
+        day: int = self.rng.integers(low=1, high=28, endpoint=True)
+        hour: int = self.rng.integers(low=0, high=24)
+        minute: int = self.rng.integers(low=0, high=60)
+        second: int = self.rng.integers(low=0, high=60)
         return datetime.datetime(
             year=year,
             month=month,
@@ -95,7 +93,7 @@ def _create_jpeg_exif(artist: str, datetime_original: str) -> bytes:
     }
 
     exif = piexif.dump({"0th": zeroth_ifd, "Exif": exif_ifd})  # pyright: ignore
-    return exif  # type: ignore
+    return exif
 
 
 class ImageRecipe(TypedDict):

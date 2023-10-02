@@ -23,7 +23,7 @@ format: .pdm # Auto-format Python source files
 	pdm run ruff --select I001 --fix --show-fixes $(sources)
 
 .PHONY: lint
-lint: .pdm .pre_commit # Lint python source files
+lint: .pdm .pre-commit # Lint python source files
 	pdm run black $(sources) --check --diff
 	pdm run mypy $(sources)
 	pdm run ruff $(sources)
