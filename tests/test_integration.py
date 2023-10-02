@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 def test_integration_happy_case(
     tmp_path: Path,
     valid_dirtree_recipe: list[ImageRecipe],
-):
+) -> None:
     src = tmp_path / "src"
     create_dirtree(recipe=valid_dirtree_recipe, outdir=src)
     expected_number_of_files: int = len(tuple(p for p in src.rglob("*") if p.is_file()))

@@ -35,15 +35,15 @@ class _Parts:
         expected_parts: set[str],
     ) -> None:
         self._expected_parts = expected_parts
-        self._parts: dict
+        self._parts: dict[str, int | str]
 
-    def _reset(self):
+    def _reset(self) -> None:
         self._parts = {}
 
     def __call__(self, path: Path) -> Any:
         self._reset()
         img = read_image(path)
-        exif_dict: dict[int, Any] = img._getexif()  # type: ignore[attr-defined] # noqa: SLF001 E501
+        exif_dict: dict[int, Any] = img._getexif()  # type: ignore   # noqa: SLF001
         if VALID_PLACEHOLDERS.OLDNAME in self._expected_parts:
             self._parts[VALID_PLACEHOLDERS.OLDNAME] = path.stem
 
@@ -56,7 +56,7 @@ class _Parts:
             VALID_PLACEHOLDERS.SECOND,
         } & self._expected_parts:
             try:
-                self._add_datetime(exif_dict=exif_dict)
+                self._add_datetime(exif_dict=exif_dict)  # pyright: ignore
             except Exception as e:  # noqa: BLE001
                 logger.warning(
                     r"Processing 'DateTimeOriginal' field failed {path: '%s': error:"
@@ -66,7 +66,7 @@ class _Parts:
                 )
         return self._parts
 
-    def _add_datetime(self, exif_dict: dict):
+    def _add_datetime(self, exif_dict: dict[int, Any]) -> None:
         date_time_original_str = exif_dict[ExifTags.Base.DateTimeOriginal.value]
         date_time_original_obj = datetime.datetime.strptime(  # noqa: DTZ007
             date_time_original_str,
@@ -101,7 +101,7 @@ class FilepathCreator:
         return self._outdir / f"{name}{path.suffix}"
 
 
-def check_template(template: Template):
+def check_template(template: Template) -> None:
     if not is_valid(template=template):
         raise RuntimeError(f"Given template '{template.template}' is invalid.")
     unknown_placeholders = set(get_identifiers(template)) - VALID_PLACEHOLDERS_SET
@@ -149,7 +149,7 @@ def process_files(
     filepath_creator: FilepathCreator,
     is_dry_run: bool = False,  # noqa: FBT001 FBT002
 ) -> None:
-    stats = Counter(**{_PROCESSED_FILES: 0, _SUCCEEDED: 0, _FAILED: 0})
+    stats: Counter[str] = Counter(**{_PROCESSED_FILES: 0, _SUCCEEDED: 0, _FAILED: 0})
     for it, oldfilepath in enumerate(src_filepaths):
         logger.debug("(%d) Processing %s...", it, oldfilepath)
         if not oldfilepath.is_file():

@@ -6,7 +6,7 @@ groups = ["default", "dev", "format", "lint", "test"]
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:5203de3ca936b6d33501a37516e6ea60c452b40f4eae89d79a3d79521a70b732"
+content_hash = "sha256:2efb95148882b548232053c53694bb2019dec69c660d18872e4130f07eea837d"
 
 [[package]]
 name = "black"
@@ -582,6 +582,19 @@ dependencies = [
 files = [
     {file = "pyproject_api-1.6.1-py3-none-any.whl", hash = "sha256:4c0116d60476b0786c88692cf4e325a9814965e2469c5998b830bba16b183675"},
     {file = "pyproject_api-1.6.1.tar.gz", hash = "sha256:1817dc018adc0d1ff9ca1ed8c60e1623d5aaca40814b953af14a9cf9a5cae538"},
+]
+
+[[package]]
+name = "pyright"
+version = "1.1.329"
+requires_python = ">=3.7"
+summary = "Command line wrapper for pyright"
+dependencies = [
+    "nodeenv>=1.6.0",
+]
+files = [
+    {file = "pyright-1.1.329-py3-none-any.whl", hash = "sha256:c16f88a7ac14ddd0513e62fec56d69c37e3c6b412161ad16aa23a9c7e3dabaf4"},
+    {file = "pyright-1.1.329.tar.gz", hash = "sha256:5baf82ff5ecb8c8b3ac400e8536348efbde0b94a09d83d5b440c0d143fd151a8"},
 ]
 
 [[package]]

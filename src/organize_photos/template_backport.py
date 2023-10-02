@@ -34,7 +34,7 @@ def is_valid(template: Template) -> bool:
     return True
 
 
-def get_identifiers(template: Template):
+def get_identifiers(template: Template) -> list[str]:
     """
     Extract and return a list of unique named identifiers from a template pattern.
 
@@ -59,7 +59,7 @@ def get_identifiers(template: Template):
         This is Python 3.11 backport of `Template.get_identifiers` method
     Author: Python Software Foundation
     """
-    ids = []
+    ids: list[str] = []
     for mo in template.pattern.finditer(template.template):
         named = mo.group("named") or mo.group("braced")
         if named is not None and named not in ids:

@@ -53,7 +53,13 @@ from organize_photos.processing import process
     is_flag=True,
     help="Perform a dry run without actually copying files",
 )
-def cli(source_dir, dest_dir, template, file_pattern, dry_run):
+def cli(
+    source_dir: Path,
+    dest_dir: Path,
+    template: str,
+    file_pattern: str,
+    dry_run: bool,  # noqa: FBT001
+) -> None:
     process(
         src_dir=source_dir,
         dst_dir=dest_dir,

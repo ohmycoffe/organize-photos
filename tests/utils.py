@@ -1,3 +1,5 @@
+# pyright: reportUnknownMemberType=false
+
 from __future__ import annotations
 
 import datetime
@@ -20,9 +22,9 @@ class RandomValuesGenerator:
         self.rng = np.random.default_rng(seed)
 
     def get_datetime(self, min_year: int, max_year: int) -> datetime.datetime:
-        year = self.rng.integers(low=min_year, high=max_year, endpoint=True)
-        month = self.rng.integers(low=1, high=12, endpoint=True)
-        day = self.rng.integers(low=1, high=28, endpoint=True)
+        year: bool = self.rng.integers(low=min_year, high=max_year, endpoint=True)
+        month: bool = self.rng.integers(low=1, high=12, endpoint=True)
+        day: bool = self.rng.integers(low=1, high=28, endpoint=True)
         hour = self.rng.integers(low=0, high=24)
         minute = self.rng.integers(low=0, high=60)
         second = self.rng.integers(low=0, high=60)
@@ -35,7 +37,7 @@ class RandomValuesGenerator:
             second=second,
         )
 
-    def get_image(self, min_size: int, max_size) -> Image.Image:
+    def get_image(self, min_size: int, max_size: int) -> Image.Image:
         size = (
             *self.rng.integers(
                 low=min_size,
@@ -68,6 +70,7 @@ class RandomValuesGenerator:
                 for _ in range(self.rng.integers(max_depth, endpoint=True))
             ],
         )
+
         return p
 
     def get_filename(
@@ -91,8 +94,8 @@ def _create_jpeg_exif(artist: str, datetime_original: str) -> bytes:
         # piexif.ExifIFD.DateTimeDigitized: "2003:09:29 10:10:11",
     }
 
-    exif = piexif.dump({"0th": zeroth_ifd, "Exif": exif_ifd})
-    return exif
+    exif = piexif.dump({"0th": zeroth_ifd, "Exif": exif_ifd})  # pyright: ignore
+    return exif  # type: ignore
 
 
 class ImageRecipe(TypedDict):
@@ -115,7 +118,7 @@ def create_random_recipe(
         str(rng.get_dirpath(min_length=3, max_length=5, max_depth=2))
         for _ in range(num)
     ]
-    res = []
+    res: list[ImageRecipe] = []
     for _ in range(num):
         timestamp = rng.get_datetime(
             min_year=2000,
@@ -141,7 +144,7 @@ def create_random_recipe(
 def create_dirtree(
     recipe: list[ImageRecipe],
     outdir: Path,
-):
+) -> None:
     rng = RandomValuesGenerator(1)
     for data in recipe:
         image = rng.get_image(min_size=150, max_size=300)
@@ -154,7 +157,7 @@ def create_dirtree(
         image.save(path, exif=exif)
 
 
-def create_random_dirtree(num: int, out: Path, seed=None):
+def create_random_dirtree(num: int, out: Path, seed: int | None = None) -> None:
     rng = RandomValuesGenerator(seed)
     shutil.rmtree(out, ignore_errors=True)
     recipe_path = out / "valid_images_tree.json"
