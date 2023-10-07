@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class _Parts:
+class ExtractExif:
     def __init__(
         self,
         expected_parts: set[str],
@@ -82,10 +82,14 @@ class _Parts:
 class NameCreator:
     def __init__(self, template: Template) -> None:
         self._template = template
+        self._extract_exif_data = ExtractExif(
+            expected_parts=set(
+                get_identifiers(template=template),
+            ),
+        )
 
     def __call__(self, path: Path) -> str:
-        expected_parts = get_identifiers(self._template)
-        parts = _Parts(expected_parts=set(expected_parts))(path=path)
+        parts = self._extract_exif_data(path=path)
         try:
             name = self._template.substitute(parts)
         except KeyError:
