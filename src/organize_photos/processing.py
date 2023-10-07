@@ -112,7 +112,7 @@ def get_fileinfo(
     path: Path,
     name_creator: NameCreator,
     supported_suffixes: list[str] = SUPPORTED_IMAGE_SUFFIXES,
-):
+) -> FileInfo:
     f = FileInfo(src=path)
     try:
         suffix = f.src.suffix
@@ -131,14 +131,14 @@ def get_fileinfo(
     return f
 
 
-def copy(file_info: FileInfo, dst_dir: Path):
-    path = dst_dir / f"{file_info.dst}.{file_info.src.suffix}"
+def copy(file_info: FileInfo, dst_dir: Path) -> None:
+    path = dst_dir / f"{file_info.dst}{file_info.src.suffix}"
     if path.exists():
         count = 1
         while path.exists():
             logger.warning("Path `%s` already exists.", path)
             count += 1
-            path = dst_dir / f"{file_info.dst}_{count}.{file_info.src.suffix}"
+            path = dst_dir / f"{file_info.dst}_{count}{file_info.src.suffix}"
     logger.info("Copy file `%s` to `%s`.", file_info.src, path)
     path.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(src=str(file_info.src), dst=str(path))
@@ -149,7 +149,7 @@ def bulk_process_files(
     dst_dir: Path,
     template: str,
     file_pattern: str,
-):
+) -> None:
     """
     Copy all files which match `file_pattern` from `src_dir` to `dst_dir`.
     Newly created files would be renamed according to given `template`.
