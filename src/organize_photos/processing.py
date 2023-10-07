@@ -3,9 +3,8 @@ from __future__ import annotations
 import datetime
 import logging
 import shutil
-from collections import Counter
 from string import Template
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import TYPE_CHECKING, Any
 
 from PIL import ExifTags
 
@@ -15,6 +14,7 @@ from organize_photos.constants import (
     VALID_PLACEHOLDERS,
     VALID_PLACEHOLDERS_SET,
 )
+from organize_photos.file import FileInfo, Status
 from organize_photos.loader import read_image
 from organize_photos.template_backport import get_identifiers, is_valid
 
@@ -22,11 +22,6 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 logger = logging.getLogger(__name__)
-
-
-_FAILED = "failed"
-_SUCCEEDED = "succeeded"
-_PROCESSED_FILES = "processed_files"
 
 
 class _Parts:
@@ -43,7 +38,7 @@ class _Parts:
     def __call__(self, path: Path) -> Any:
         self._reset()
         img = read_image(path)
-        exif_dict: dict[int, Any] = img._getexif()  # type: ignore   # noqa: SLF001
+        exif_dict: dict[int, Any] = img._getexif()  # type: ignore # noqa: SLF001
         if VALID_PLACEHOLDERS.OLDNAME in self._expected_parts:
             self._parts[VALID_PLACEHOLDERS.OLDNAME] = path.stem
 
@@ -84,12 +79,11 @@ class _Parts:
         )
 
 
-class FilepathCreator:
-    def __init__(self, outdir: Path, template: Template) -> None:
-        self._outdir = outdir
+class NameCreator:
+    def __init__(self, template: Template) -> None:
         self._template = template
 
-    def __call__(self, path: Path) -> Path:
+    def __call__(self, path: Path) -> str:
         expected_parts = get_identifiers(self._template)
         parts = _Parts(expected_parts=set(expected_parts))(path=path)
         try:
@@ -97,8 +91,10 @@ class FilepathCreator:
         except KeyError:
             name = f"default/{path.stem}"
             logger.warning("For '%s' a default path will be created '%s'", path, name)
-
-        return self._outdir / f"{name}{path.suffix}"
+        except Exception:
+            logger.exception("Unexpected error occurred.")
+            raise
+        return name
 
 
 def check_template(template: Template) -> None:
@@ -112,71 +108,74 @@ def check_template(template: Template) -> None:
         )
 
 
-def process(
+def get_fileinfo(
+    path: Path,
+    name_creator: NameCreator,
+    supported_suffixes: list[str] = SUPPORTED_IMAGE_SUFFIXES,
+):
+    f = FileInfo(src=path)
+    try:
+        suffix = f.src.suffix
+        if f.src.suffix not in supported_suffixes:
+            f.errors.append(
+                RuntimeError(
+                    f"Suffix '{suffix}' is not supported",
+                ),
+            )
+            f.status = Status.FAILED
+            return f
+        f.dst = name_creator(path=path)
+    except Exception as e:  # noqa: BLE001
+        f.errors.append(e)
+        f.status = Status.FAILED
+    return f
+
+
+def copy(file_info: FileInfo, dst_dir: Path):
+    path = dst_dir / f"{file_info.dst}.{file_info.src.suffix}"
+    if path.exists():
+        count = 1
+        while path.exists():
+            logger.warning("Path `%s` already exists.", path)
+            count += 1
+            path = dst_dir / f"{file_info.dst}_{count}.{file_info.src.suffix}"
+    logger.info("Copy file `%s` to `%s`.", file_info.src, path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src=str(file_info.src), dst=str(path))
+
+
+def bulk_process_files(
     src_dir: Path,
     dst_dir: Path,
     template: str,
-    file_pattern: str = "**/*",
-    is_dry_run: bool = False,  # noqa: FBT002 FBT001
-) -> None:
+    file_pattern: str,
+):
     """
-    Copy files from source_directory to destination_directory based on a path template.
+    Copy all files which match `file_pattern` from `src_dir` to `dst_dir`.
+    Newly created files would be renamed according to given `template`.
 
     Args:
         src_dir (Path): Source directory.
         dst_dir (Path): Destination directory.
         template (str): Template for generating new file paths.
         file_pattern (str): Pattern for selecting files (UNIX style glob pattern).
-        is_dry_run (bool): If True, perform a dry run without actually copying files.
 
     Returns:
         None
     """
-    files = (p for p in src_dir.glob(pattern=file_pattern) if p.is_file())
-    t = Template(template=template)
+    t = Template(template)
     check_template(t)
-    fc = FilepathCreator(outdir=dst_dir, template=t)
-
-    process_files(
-        src_filepaths=files,
-        filepath_creator=fc,
-        is_dry_run=is_dry_run,
-    )
-
-
-def process_files(
-    src_filepaths: Iterable[Path],
-    filepath_creator: FilepathCreator,
-    is_dry_run: bool = False,  # noqa: FBT001 FBT002
-) -> None:
-    stats: Counter[str] = Counter(**{_PROCESSED_FILES: 0, _SUCCEEDED: 0, _FAILED: 0})
-    for it, oldfilepath in enumerate(src_filepaths):
-        logger.debug("(%d) Processing %s...", it, oldfilepath)
-        if not oldfilepath.is_file():
-            logger.warning("'%s' is not a file - skipping.", oldfilepath)
+    nc = NameCreator(template=t)
+    for p in src_dir.glob(file_pattern):
+        if not p.is_file():
             continue
-        stats[_PROCESSED_FILES] += 1
-        try:
-            suffix = oldfilepath.suffix
-            stats[suffix] += 1
-            if suffix not in SUPPORTED_IMAGE_SUFFIXES:
-                raise RuntimeError(  # noqa: TRY301
-                    f"Suffix '{suffix}' is not supportrd",
-                )
-            newfilepath = filepath_creator(path=oldfilepath)
-            if not is_dry_run:
-                newfilepath.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(src=str(oldfilepath), dst=str(newfilepath))
-            logger.info("Copy file from '%s' to '%s'.", oldfilepath, newfilepath)
-            stats[_SUCCEEDED] += 1
-        except Exception:
-            logger.exception("Failed to process %s. Will be skipped.", oldfilepath)
-            stats[_FAILED] += 1
-
-    logger.info(
-        "Processing finished. Processed %s files. Succeeded %s. Failed %s",
-        stats[_PROCESSED_FILES],
-        stats[_SUCCEEDED],
-        stats[_FAILED],
-    )
-    logger.debug("%s", dict(stats))
+        logger.debug("Process `%s", p)
+        file_info = get_fileinfo(
+            path=p,
+            name_creator=nc,
+            supported_suffixes=SUPPORTED_IMAGE_SUFFIXES,
+        )
+        if file_info.status is not Status.SUCCEEDED:
+            for err in file_info.errors:
+                logger.error("Failed `%s`: `%s`", file_info.src, err)
+        copy(file_info=file_info, dst_dir=dst_dir)

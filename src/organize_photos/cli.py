@@ -2,7 +2,7 @@ from pathlib import Path
 
 import click
 
-from organize_photos.processing import process
+from organize_photos.processing import bulk_process_files
 
 
 @click.command()
@@ -48,22 +48,15 @@ from organize_photos.processing import process
     type=click.STRING,
     help="Pattern for selecting files (UNIX style glob pattern)",
 )
-@click.option(
-    "--dry-run",
-    is_flag=True,
-    help="Perform a dry run without actually copying files",
-)
 def cli(
     source_dir: Path,
     dest_dir: Path,
     template: str,
     file_pattern: str,
-    dry_run: bool,  # noqa: FBT001
 ) -> None:
-    process(
+    bulk_process_files(
         src_dir=source_dir,
         dst_dir=dest_dir,
         template=template,
         file_pattern=file_pattern,
-        is_dry_run=dry_run,
     )
