@@ -4,7 +4,7 @@ import datetime
 import json
 import shutil
 from pathlib import Path
-from typing import TypedDict
+from typing import Any, TypedDict
 
 import numpy as np
 import piexif
@@ -82,24 +82,9 @@ class RandomValuesGenerator:
         return f"{stem}{suffix}"
 
 
-def _create_jpeg_exif(artist: str, datetime_original: str) -> bytes:
-    zeroth_ifd = {
-        piexif.ImageIFD.Artist: artist,
-        # piexif.ImageIFD.DateTime: "2001:01:01 00:00:00",
-    }
-    exif_ifd = {
-        piexif.ExifIFD.DateTimeOriginal: datetime_original,
-        # piexif.ExifIFD.DateTimeDigitized: "2003:09:29 10:10:11",
-    }
-
-    exif = piexif.dump({"0th": zeroth_ifd, "Exif": exif_ifd})  # pyright: ignore
-    return exif
-
-
 class ImageRecipe(TypedDict):
     path: str
-    artist: str
-    timestamp: str
+    exif: dict[str, Any] | None
 
 
 def create_random_recipe(
@@ -132,8 +117,14 @@ def create_random_recipe(
         res.append(
             ImageRecipe(
                 path=str(Path(dirpath, filename)),
-                artist=artist,
-                timestamp=timestamp.strftime(EXIF_DATETIME_FORMAT),
+                exif={
+                    "0th": {piexif.ImageIFD.Artist: artist},
+                    "Exif": {
+                        piexif.ExifIFD.DateTimeOriginal: timestamp.strftime(
+                            EXIF_DATETIME_FORMAT,
+                        ),
+                    },
+                },
             ),
         )
     return res
@@ -146,13 +137,14 @@ def create_dirtree(
     rng = RandomValuesGenerator(1)
     for data in recipe:
         image = rng.get_image(min_size=150, max_size=300)
-        exif = _create_jpeg_exif(
-            artist=data["artist"],
-            datetime_original=data["timestamp"],
-        )
         path = outdir / data["path"]
         path.parent.mkdir(exist_ok=True, parents=True)
-        image.save(path, exif=exif)
+        exif_dict = data["exif"]
+        if exif_dict is not None:
+            exif = piexif.dump(exif_dict)
+            image.save(path, exif=exif)
+        else:
+            image.save(path)
 
 
 def create_random_dirtree(num: int, out: Path, seed: int | None = None) -> None:

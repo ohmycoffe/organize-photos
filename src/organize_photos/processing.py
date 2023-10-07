@@ -129,6 +129,7 @@ def get_fileinfo(
             f.status = Status.FAILED
             return f
         f.dst = name_creator(path=path)
+        f.status = Status.SUCCEEDED
     except Exception as e:  # noqa: BLE001
         f.errors.append(e)
         f.status = Status.FAILED
