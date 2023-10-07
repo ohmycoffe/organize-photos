@@ -4,7 +4,7 @@ import datetime
 import logging
 import shutil
 from string import Template
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import TYPE_CHECKING, Any, Callable, Iterable
 
 from PIL import ExifTags
 
@@ -114,7 +114,7 @@ def check_template(template: Template) -> None:
 
 def get_fileinfo(
     path: Path,
-    name_creator: NameCreator,
+    name_create_call: Callable[[Path], str],
     supported_suffixes: list[str] = SUPPORTED_IMAGE_SUFFIXES,
 ) -> FileInfo:
     f = FileInfo(src=path)
@@ -128,7 +128,7 @@ def get_fileinfo(
             )
             f.status = Status.FAILED
             return f
-        f.dst = name_creator(path=path)
+        f.dst = name_create_call(path)
         f.status = Status.SUCCEEDED
     except Exception as e:  # noqa: BLE001
         f.errors.append(e)
@@ -152,7 +152,7 @@ def copy(file_info: FileInfo, dst_dir: Path) -> None:
 def process_files(
     files: Iterable[Path],
     dst_dir: Path,
-    name_creator: NameCreator,
+    create_name_call: Callable[[Path], str],
 ) -> None:
     """
     Copy all `files` to `dst_dir`.
@@ -162,7 +162,7 @@ def process_files(
     Args:
         files (Path): Source files.
         dst_dir (Path): Destination directory.
-        name_creator (`NameCreator`): Name creator instance
+        create_name_call (Callable):  callable that rename filename
     Returns:
         None
     """
@@ -172,7 +172,7 @@ def process_files(
         logger.debug("Process `%s", p)
         file_info = get_fileinfo(
             path=p,
-            name_creator=name_creator,
+            name_create_call=create_name_call,
             supported_suffixes=SUPPORTED_IMAGE_SUFFIXES,
         )
         if file_info.status is not Status.SUCCEEDED:
@@ -204,4 +204,8 @@ def bulk_process_files_in_srcdir(
     t = Template(template)
     check_template(t)
     nc = NameCreator(template=t)
-    process_files(files=src_dir.glob(file_pattern), dst_dir=dst_dir, name_creator=nc)
+    process_files(
+        files=src_dir.glob(file_pattern),
+        dst_dir=dst_dir,
+        create_name_call=nc,
+    )
