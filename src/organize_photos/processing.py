@@ -14,7 +14,7 @@ from organize_photos.constants import (
     VALID_PLACEHOLDERS,
     VALID_PLACEHOLDERS_SET,
 )
-from organize_photos.file import FileInfo, Status
+from organize_photos.fileinfo import FileInfo, Status
 from organize_photos.loader import read_image
 from organize_photos.template_backport import get_identifiers, is_valid
 
@@ -182,4 +182,5 @@ def bulk_process_files(
         if file_info.status is not Status.SUCCEEDED:
             for err in file_info.errors:
                 logger.error("Failed `%s`: `%s`", file_info.src, err)
+            continue
         copy(file_info=file_info, dst_dir=dst_dir)
