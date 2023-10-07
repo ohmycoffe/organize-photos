@@ -2,7 +2,7 @@ from pathlib import Path
 
 import click
 
-from organize_photos.processing import bulk_process_files
+from organize_photos.processing import bulk_process_files_in_srcdir
 
 
 @click.command()
@@ -54,7 +54,7 @@ def cli(
     template: str,
     file_pattern: str,
 ) -> None:
-    bulk_process_files(
+    bulk_process_files_in_srcdir(
         src_dir=source_dir,
         dst_dir=dest_dir,
         template=template,

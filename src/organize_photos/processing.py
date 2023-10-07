@@ -4,7 +4,7 @@ import datetime
 import logging
 import shutil
 from string import Template
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Iterable
 
 from PIL import ExifTags
 
@@ -149,7 +149,40 @@ def copy(file_info: FileInfo, dst_dir: Path) -> None:
     shutil.copy2(src=str(file_info.src), dst=str(path))
 
 
-def bulk_process_files(
+def process_files(
+    files: Iterable[Path],
+    dst_dir: Path,
+    name_creator: NameCreator,
+) -> None:
+    """
+    Copy all `files` to `dst_dir`.
+    Newly created files would be renamed according to given rules defined in
+    `name_creator` instance.
+
+    Args:
+        files (Path): Source files.
+        dst_dir (Path): Destination directory.
+        name_creator (`NameCreator`): Name creator instance
+    Returns:
+        None
+    """
+    for p in files:
+        if not p.is_file():
+            continue
+        logger.debug("Process `%s", p)
+        file_info = get_fileinfo(
+            path=p,
+            name_creator=name_creator,
+            supported_suffixes=SUPPORTED_IMAGE_SUFFIXES,
+        )
+        if file_info.status is not Status.SUCCEEDED:
+            for err in file_info.errors:
+                logger.error("Failed `%s`: `%s`", file_info.src, err)
+            continue
+        copy(file_info=file_info, dst_dir=dst_dir)
+
+
+def bulk_process_files_in_srcdir(
     src_dir: Path,
     dst_dir: Path,
     template: str,
@@ -171,17 +204,4 @@ def bulk_process_files(
     t = Template(template)
     check_template(t)
     nc = NameCreator(template=t)
-    for p in src_dir.glob(file_pattern):
-        if not p.is_file():
-            continue
-        logger.debug("Process `%s", p)
-        file_info = get_fileinfo(
-            path=p,
-            name_creator=nc,
-            supported_suffixes=SUPPORTED_IMAGE_SUFFIXES,
-        )
-        if file_info.status is not Status.SUCCEEDED:
-            for err in file_info.errors:
-                logger.error("Failed `%s`: `%s`", file_info.src, err)
-            continue
-        copy(file_info=file_info, dst_dir=dst_dir)
+    process_files(files=src_dir.glob(file_pattern), dst_dir=dst_dir, name_creator=nc)
