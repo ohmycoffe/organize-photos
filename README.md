@@ -70,7 +70,7 @@ For instance, if you have a file located at `/path/to/source/photos/image1.jpeg`
 
 ## License
 
-This organize-photos is open-source software released under the [MIT License](LICENSE). You are free to use, modify, and distribute it.
+This organize-photos is released under the [MIT License](LICENSE).
 
 ## Author
 
