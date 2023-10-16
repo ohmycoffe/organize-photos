@@ -23,7 +23,7 @@ format: .pdm # Auto-format Python source files
 	pdm run ruff --select I001 --fix --show-fixes $(sources)
 
 .PHONY: lint
-lint: .pdm .pre-commit # Lint python source files
+lint: .pdm # Lint python source files
 	pdm run black $(sources) --check --diff
 	pdm run mypy $(sources)
 	pdm run ruff $(sources)
@@ -60,5 +60,4 @@ help: # List all available commands
 
 .PHONY : install, install-cicd, all
 install : .install-project .install-pre-commit # Install the package, dependencies, and pre-commit for local development
-install-cicd : .install-project # Install the package and dependencies for cicd
 all : clean install format lint pre-commit test build # (default) Run all commands
