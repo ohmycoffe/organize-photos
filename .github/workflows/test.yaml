@@ -22,7 +22,7 @@ jobs:
           python-version: "3.11"
       - name: Install dependencies
         run: |
-          pdm sync -dG lint
+          pdm sync -dG lint -dG format
       - name: Run Lint
         run: |
           make lint
