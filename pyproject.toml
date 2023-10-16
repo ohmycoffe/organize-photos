@@ -1,13 +1,34 @@
 [project]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Utilities",
+    "License :: OSI Approved :: MIT License",
+]
 name = "organize-photos"
 version = "0.1.0"
-description = "Organize your photos into meaningful structure based on timestamps"
+description = "Python CLI program that allows you to organize your photos into subfolders based on their EXIF metadata."
 authors = [{ name = "ohmycoffe", email = "ohmycoffe1@gmail.com" }]
 dependencies = ["Pillow>=10.0.1", "click>=8.1.7"]
 requires-python = ">=3.8"
 readme = "README.md"
-license = { text = "MIT" }
+license = { file = "LICENSE" }
+keywords = ["photos", "images", "multimedia", "organize", "exif"]
 
+[project.scripts]
+organize-photos = "organize_photos.__main__:main"
+
+[project.urls]
+repository = "https://github.com/ohmycoffe/organize-photos"
 
 [build-system]
 requires = ["pdm-backend"]
@@ -30,12 +51,7 @@ test = [
     "pytest-xdist>=3.3.1",
     "pytest-mock>=3.11.1",
 ]
-lint = [
-    "mypy",
-    "flake8-pyproject",
-    "types-Pillow",
-    "ruff",
-]
+lint = ["mypy", "flake8-pyproject", "types-Pillow", "ruff"]
 format = ["black"]
 
 
@@ -52,7 +68,7 @@ omit = ["**/template_backport.py", "**/organize_photos/__main__.py"]
 # warn_return_any = true
 # show_error_codes = true
 # warn_unused_ignores = true
-strict=true
+strict = true
 mypy_path = "$MYPY_CONFIG_FILE_DIR/src/typings"
 
 # [[tool.mypy.overrides]]
@@ -81,7 +97,7 @@ ignore = [
     "DTZ001",
     "RET504",
     "PGH003",
-    "SIM105"
+    "SIM105",
 ]
 
 [tool.ruff.per-file-ignores]
@@ -91,5 +107,5 @@ ignore = [
 include = ["src", "tests"]
 pythonVersion = "3.8"
 pythonPlatform = "All"
-reportMissingTypeStubs=true
-stubPath="./src/typings"
+reportMissingTypeStubs = true
+stubPath = "./src/typings"

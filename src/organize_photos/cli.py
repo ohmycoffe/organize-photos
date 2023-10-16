@@ -28,7 +28,10 @@ from organize_photos.processing import bulk_process_files_in_srcdir
         writable=True,
         path_type=Path,
     ),
-    help="Destination directory where copied and renamed images will be saved.",
+    help=(
+        "The destination directory where copied and renamed images will be saved. If"
+        " not provided, the default is the current working directory."
+    ),
 )
 @click.option(
     "-t",
@@ -37,7 +40,11 @@ from organize_photos.processing import bulk_process_files_in_srcdir
     default="${year}/${year}${month}${day}${hour}${minute}${second}",
     show_default=True,
     type=click.STRING,
-    help="Template for generating new file paths",
+    help=(
+        "The template for generating new file paths. Customize the path structure using"
+        " placeholders such as `${year}`, `${month}`, `${day}`, `${hour}`, `${minute}`,"
+        " and `${second}`."
+    ),
 )
 @click.option(
     "-p",
@@ -46,7 +53,11 @@ from organize_photos.processing import bulk_process_files_in_srcdir
     default="**/*",
     show_default=True,
     type=click.STRING,
-    help="Pattern for selecting files (UNIX style glob pattern)",
+    help=(
+        "The pattern for selecting files in the source directory. Use UNIX-style glob"
+        " patterns to filter which files will be processed. The default is to process"
+        " all files."
+    ),
 )
 def cli(
     source_dir: Path,
