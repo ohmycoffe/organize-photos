@@ -8,7 +8,11 @@ on:
     types:
       - opened
       - synchronize
-
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "pdm.lock"
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -49,3 +53,21 @@ jobs:
       - name: Run Tests
         run: |
           pdm run -v pytest tests
+  test-coverage-report:
+    runs-on: ubuntu-latest
+    name: Generate a test-coverage report
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.11"
+      - name: Set up PDM
+        uses: pdm-project/setup-pdm@v3
+      - name: Install dependencies
+        run: |
+          pdm sync -dG test
+      - name: Run tests and collect coverage
+        run: |
+          pdm run pytest --cov=src --cov-report=xml
+      - name: Upload coverage reports to Codecov with GitHub Action
+        uses: codecov/codecov-action@v3

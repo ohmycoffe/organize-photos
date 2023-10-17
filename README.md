@@ -1,5 +1,14 @@
-
 # organize-photos
+
+![PyPI - Version](https://img.shields.io/pypi/v/organize-photos)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/organize-photos)
+![PyPI - License](https://img.shields.io/pypi/l/organize-photos)
+[![Test and lint](https://github.com/ohmycoffe/organize-photos/actions/workflows/test.yaml/badge.svg)](https://github.com/ohmycoffe/organize-photos/actions/workflows/test.yaml)
+[![codecov](https://codecov.io/gh/ohmycoffe/organize-photos/graph/badge.svg?token=PAN0F7B4E8)](https://codecov.io/gh/ohmycoffe/organize-photos)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
+[![pdm-managed](https://img.shields.io/badge/pdm-managed-blueviolet)](https://pdm.fming.dev)
 
 The `organize-photos` is a Python CLI program that allows you to organize your photos into subfolders based on their EXIF metadata. You can define a custom pattern to create new paths for your photos, making it easy to sort and categorize your image collection.
 
@@ -62,11 +71,11 @@ pip install organize-photos --user
 ## Example
 
 ```bash
-organize-photos /path/to/source/photos -d /path/to/output -t "${year}/${year}${month}${day}${hour}${minute}${second}" -p "**/*.jpg"
+organize-photos /path/to/source/photos -d /path/to/output -t "${year}/${year}${month}${day}${hour}${minute}${second}"
 ```
 
 This command will organize the photos in the source directory based on the specified template and file pattern and save the organized photos in the destination directory.
-For instance, if you have a file located at `/path/to/source/photos/image1.jpeg`, which was created on `January 3, 2019, at 20:54:12`, the program creates a copy of the file at `/path/to/output/2019/20190103205412.jpeg` following the specified pattern.
+For instance, if you have a file located at `/path/to/source/photos/image1.jpg`, which was created on `January 3, 2019, at 20:54:12`, the program creates a copy of the file at `/path/to/output/2019/20190103205412.jpg` following the specified pattern.
 
 ## License
 
