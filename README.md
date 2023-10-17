@@ -1,5 +1,13 @@
-
 # organize-photos
+
+![PyPI - Version](https://img.shields.io/pypi/v/organize-photos)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/organize-photos)
+![PyPI - License](https://img.shields.io/pypi/l/organize-photos)
+[![Test and lint](https://github.com/ohmycoffe/organize-photos/actions/workflows/test.yaml/badge.svg)](https://github.com/ohmycoffe/organize-photos/actions/workflows/test.yaml)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
+[![pdm-managed](https://img.shields.io/badge/pdm-managed-blueviolet)](https://pdm.fming.dev)
 
 The `organize-photos` is a Python CLI program that allows you to organize your photos into subfolders based on their EXIF metadata. You can define a custom pattern to create new paths for your photos, making it easy to sort and categorize your image collection.
 
