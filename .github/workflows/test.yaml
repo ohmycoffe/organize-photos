@@ -13,6 +13,8 @@ on:
       - "tests/**"
       - "pyproject.toml"
       - "pdm.lock"
+      - ".github/**"
+      - "Makefile"
 jobs:
   lint:
     runs-on: ubuntu-latest

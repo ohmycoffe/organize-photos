@@ -1,6 +1,6 @@
 # organize-photos
 
-![PyPI - Version](https://img.shields.io/pypi/v/organize-photos)
+[![PyPI - Version](https://img.shields.io/pypi/v/organize-photos)](https://pypi.org/project/organize-photos/)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/organize-photos)
 [![Test and lint](https://github.com/ohmycoffe/organize-photos/actions/workflows/test.yaml/badge.svg?branch=main)](https://github.com/ohmycoffe/organize-photos/actions/workflows/test.yaml?query=branch%3Amain)
 [![codecov](https://codecov.io/gh/ohmycoffe/organize-photos/graph/badge.svg?token=PAN0F7B4E8)](https://codecov.io/gh/ohmycoffe/organize-photos)
