@@ -8,9 +8,11 @@ on:
     types:
       - opened
       - synchronize
-  paths:
-    - "src/**"
-    - "tests/**"
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "pdm.lock"
 jobs:
   lint:
     runs-on: ubuntu-latest
