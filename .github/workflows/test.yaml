@@ -53,7 +53,7 @@ jobs:
       - name: Run Tests
         run: |
           pdm run -v pytest tests
-  testcov:
+  test-coverage-report:
     runs-on: ubuntu-latest
     name: Generate a test-coverage report
     steps:
