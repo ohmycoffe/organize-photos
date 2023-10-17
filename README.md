@@ -70,11 +70,11 @@ pip install organize-photos --user
 ## Example
 
 ```bash
-organize-photos /path/to/source/photos -d /path/to/output -t "${year}/${year}${month}${day}${hour}${minute}${second}" -p "**/*.jpg"
+organize-photos /path/to/source/photos -d /path/to/output -t "${year}/${year}${month}${day}${hour}${minute}${second}"
 ```
 
 This command will organize the photos in the source directory based on the specified template and file pattern and save the organized photos in the destination directory.
-For instance, if you have a file located at `/path/to/source/photos/image1.jpeg`, which was created on `January 3, 2019, at 20:54:12`, the program creates a copy of the file at `/path/to/output/2019/20190103205412.jpeg` following the specified pattern.
+For instance, if you have a file located at `/path/to/source/photos/image1.jpg`, which was created on `January 3, 2019, at 20:54:12`, the program creates a copy of the file at `/path/to/output/2019/20190103205412.jpg` following the specified pattern.
 
 ## License
 
