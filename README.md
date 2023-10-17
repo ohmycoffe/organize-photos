@@ -4,6 +4,7 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/organize-photos)
 ![PyPI - License](https://img.shields.io/pypi/l/organize-photos)
 [![Test and lint](https://github.com/ohmycoffe/organize-photos/actions/workflows/test.yaml/badge.svg)](https://github.com/ohmycoffe/organize-photos/actions/workflows/test.yaml)
+[![codecov](https://codecov.io/gh/ohmycoffe/organize-photos/graph/badge.svg?token=PAN0F7B4E8)](https://codecov.io/gh/ohmycoffe/organize-photos)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
