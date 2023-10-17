@@ -8,7 +8,9 @@ on:
     types:
       - opened
       - synchronize
-
+  paths:
+    - "src/**"
+    - "tests/**"
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -51,7 +53,7 @@ jobs:
           pdm run -v pytest tests
   testcov:
     runs-on: ubuntu-latest
-    name: Test python API
+    name: Generate a test-coverage report
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v2
